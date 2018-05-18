@@ -30,6 +30,7 @@ property :initdb_locale,     String, default: 'UTF-8'
 action :install do
   node.run_state['postgresql'] ||= {}
   node.run_state['postgresql']['version'] = new_resource.version
+  puts "HELLO DAN THE VERSION IS #{new_resource.version}"
 
   postgresql_client_install 'Install PostgreSQL Client' do
     version new_resource.version
@@ -104,10 +105,8 @@ action_class do
   def rhel_init_db_command
     if platform_family?('fedora') || (platform_family?('rhel') && node['platform_version'].to_i >= 7)
       "/usr/pgsql-#{new_resource.version}/bin/postgresql#{new_resource.version.delete('.')}-setup initdb"
-    elsif platform_family?('rhel') && node['platform_version'].to_i == 6
+    else
       "service postgresql-#{new_resource.version} initdb"
-    elsif platform?('amazon')
-      "service postgresql#{new_resource.version.delete('.')} initdb"
     end
   end
 end

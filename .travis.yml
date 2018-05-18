@@ -30,12 +30,14 @@ env:
   - INSTANCE=repo-fedora-27
   - INSTANCE=repo-ubuntu-1604
   - INSTANCE=repo-ubuntu-1804
+  - INSTANCE=server-install-amazonlinux
   - INSTANCE=server-install-centos-6
   - INSTANCE=server-install-centos-7
   - INSTANCE=server-install-debian-8
   - INSTANCE=server-install-debian-9
   - INSTANCE=server-install-fedora-27
   - INSTANCE=server-install-ubuntu-1604
+  - INSTANCE=server-install-ubuntu-1804
   - INSTANCE=client-install-amazonlinux
   - INSTANCE=client-install-centos-6
   - INSTANCE=client-install-centos-7
@@ -44,27 +46,22 @@ env:
   - INSTANCE=client-install-fedora-27
   - INSTANCE=client-install-ubuntu-1604
   - INSTANCE=client-install-ubuntu-1804
+  - INSTANCE=access-ubuntu-1804
+  - INSTANCE=access-amazonlinux
   - INSTANCE=access-centos-6
   - INSTANCE=access-centos-7
   - INSTANCE=access-debian-8
   - INSTANCE=access-debian-9
   - INSTANCE=access-fedora-27
   - INSTANCE=access-ubuntu-1604
-  - INSTANCE=ident-debian-8
-  - INSTANCE=ident-debian-9
-  - INSTANCE=ident-ubuntu-1604
-  allowed_failures:
-  # - INSTANCE=client-install-amazonlinux
   - INSTANCE=ident-amazonlinux
   - INSTANCE=ident-centos-6
   - INSTANCE=ident-centos-7
   - INSTANCE=ident-fedora-27
+  - INSTANCE=ident-debian-8
+  - INSTANCE=ident-debian-9
+  - INSTANCE=ident-ubuntu-1604
   - INSTANCE=ident-ubuntu-1804
-  - INSTANCE=access-amazonlinux
-  - INSTANCE=server-install-amazonlinux
-  - INSTANCE=server-install-ubuntu-1804
-  - INSTANCE=access-ubuntu-1804
-
 
 before_script:
   - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
