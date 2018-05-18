@@ -1,7 +1,6 @@
 #
 # Cookbook:: postgresql
 # Library:: helpers
-# Author:: David Crane (<davidc@donorschoose.org>)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +35,7 @@ module PostgresqlCookbook
       # If psql fails, generally the postgresql service is down.
       # Instead of aborting chef with a fatal error, let's just
       # pass these non-zero exitstatus back as empty cmd.stdout.
-      if cmd.exitstatus == 0 && !cmd.stderr.empty?
+      if cmd.exitstatus == 0 && !cmd.error?
         # An SQL failure is still a zero exitstatus, but then the
         # stderr explains the error, so let's rais that as fatal.
         Chef::Log.fatal("psql failed executing this SQL statement:\n#{statement}")
@@ -55,7 +54,7 @@ module PostgresqlCookbook
       exists << " --port #{new_resource.port}" if new_resource.port
       exists << " | grep #{new_resource.database}"
 
-      cmd = Mixlib::ShellOut.new(exists, user: 'postgres')
+      cmd = shell_out(exists, user: 'postgresql')
       cmd.run_command
       cmd.exitstatus == 0
     end
