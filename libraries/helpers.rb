@@ -110,7 +110,11 @@ module PostgresqlCookbook
       when 'rhel', 'fedora'
         "/var/lib/pgsql/#{version}/data"
       when 'amazon'
-        "/var/lib/pgsql#{version.delete('.')}/data"
+        if node['virtualization']['system'] == 'docker'
+          "/var/lib/pgsql#{version.delete('.')}/data"
+        else
+          "/var/lib/pgsql/#{version}/data"
+        end
       when 'debian'
         "/etc/postgresql/#{version}/main"
       end
@@ -118,9 +122,15 @@ module PostgresqlCookbook
 
     # determine the platform specific service name
     def platform_service_name(version = node.run_state['postgresql']['version'])
-      if %w(rhel amazon fedora).include?(node['platform_family'])
-        puts "HELLO DAN THE SERVICE_NAME IS postgresql#{version}"
+      case node['platform_family']
+      when 'rhel', 'fedora'
         "postgresql-#{version}"
+      when 'amazon'
+        if node['virtualization']['system'] == 'docker'
+          "postgresql#{version.delete('.')}"
+        else
+          "postgresql-#{version}"
+        end
       else
         'postgresql'
       end

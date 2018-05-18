@@ -30,7 +30,6 @@ property :initdb_locale,     String, default: 'UTF-8'
 action :install do
   node.run_state['postgresql'] ||= {}
   node.run_state['postgresql']['version'] = new_resource.version
-  puts "HELLO DAN THE VERSION IS #{new_resource.version}"
 
   postgresql_client_install 'Install PostgreSQL Client' do
     version new_resource.version
@@ -41,20 +40,14 @@ action :install do
 end
 
 action :create do
-  if platform_family?('rhel', 'fedora', 'amazon') && !initialized?
-    db_command = rhel_init_db_command
-    if db_command
-      execute 'init_db' do
-        command db_command
-        not_if { initialized? }
-      end
-    else # we don't know about this platform
-      log 'InitDB' do
-        message 'InitDB is not supported on this distro. Skipping.'
-        level :error
-      end
-    end
+  execute 'init_db' do
+    command rhel_init_db_command
+    not_if { initialized? }
+    only_if { platform_family?('rhel', 'fedora', 'amazon') }
   end
+
+  puts "\n\nHELLO DAN: #{node['virtualization']['system']}"
+  puts "#{platform_service_name}"
 
   find_resource(:service, 'postgresql') do
     service_name lazy { platform_service_name }
@@ -84,6 +77,7 @@ end
 
 action_class do
   require 'securerandom'
+  include PostgresqlCookbook::Helpers
 
   def secure_random
     r = SecureRandom.hex
@@ -92,7 +86,7 @@ action_class do
   end
 
   def initialized?
-    return true if ::File.exist?("#{data_dir}/PG_VERSION")
+    return true if ::File.exist?("#{conf_dir}/PG_VERSION")
     false
   end
 
@@ -106,7 +100,7 @@ action_class do
     if platform_family?('fedora') || (platform_family?('rhel') && node['platform_version'].to_i >= 7)
       "/usr/pgsql-#{new_resource.version}/bin/postgresql#{new_resource.version.delete('.')}-setup initdb"
     else
-      "service postgresql-#{new_resource.version} initdb"
+      "service #{platform_service_name} initdb"
     end
   end
 end
