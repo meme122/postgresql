@@ -46,9 +46,6 @@ action :create do
     only_if { platform_family?('rhel', 'fedora', 'amazon') }
   end
 
-  puts "\n\nHELLO DAN: #{node['virtualization']['system']}"
-  puts "#{platform_service_name}"
-
   find_resource(:service, 'postgresql') do
     service_name lazy { platform_service_name }
     supports restart: true, status: true, reload: true
