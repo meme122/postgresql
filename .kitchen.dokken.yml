@@ -15,9 +15,10 @@ platforms:
   driver:
     image: dokken/amazonlinux
     pid_one_command: /sbin/init
-    # intermediate_instruction:
-      # - echo "NETWORKING=yes" > /etc/sysconfig/network
-
+    intermediate_instructions:
+          - RUN yum -y install sudo kmod
+          - RUN cat > /etc/sysconfig/network << "EOF"
+          
 - name: debian-8
   driver:
     image: dokken/debian-8
